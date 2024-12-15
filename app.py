@@ -86,36 +86,34 @@ def interpret_pft(fev1, fvc, fev1_fvc, age, gender, height, ethnicity, dlco_sb=N
 # Streamlit app
 st.title("Pulmonary Function Test (PFT) Interpreter")
 
-st.header("Input PFT Values")
-
-# Input demographic data
-st.subheader("Patient Demographics")
-age = st.number_input("Age (years)", min_value=0, max_value=120, step=1, help="Age of the patient in years.")
-weight_lbs = st.number_input("Weight (lbs)", min_value=0.0, max_value=660.0, step=0.1, help="Weight of the patient in pounds.")
+# Sidebar for input fields
+st.sidebar.header("Patient Demographics")
+age = st.sidebar.number_input("Age (years)", min_value=0, max_value=120, step=1, help="Age of the patient in years.")
+weight_lbs = st.sidebar.number_input("Weight (lbs)", min_value=0.0, max_value=660.0, step=0.1, help="Weight of the patient in pounds.")
 weight_kg = round(weight_lbs * 0.453592, 2)
-st.write(f"Converted Weight: {weight_kg} kg")
+st.sidebar.write(f"Converted Weight: {weight_kg} kg")
 
-height_inches = st.number_input("Height (inches)", min_value=0.0, max_value=100.0, step=0.1, help="Height of the patient in inches.")
+height_inches = st.sidebar.number_input("Height (inches)", min_value=0.0, max_value=100.0, step=0.1, help="Height of the patient in inches.")
 height_cm = round(height_inches * 2.54, 2)
-st.write(f"Converted Height: {height_cm} cm")
+st.sidebar.write(f"Converted Height: {height_cm} cm")
 
-gender = st.selectbox("Gender", ["Male", "Female", "Other"], help="Gender of the patient.")
-ethnicity = st.selectbox("Ethnicity", ["Caucasian", "African American", "Asian", "Other"], help="Ethnicity of the patient, used for adjustments in interpretation.")
+gender = st.sidebar.selectbox("Gender", ["Male", "Female", "Other"], help="Gender of the patient.")
+ethnicity = st.sidebar.selectbox("Ethnicity", ["Caucasian", "African American", "Asian", "Other"], help="Ethnicity of the patient, used for adjustments in interpretation.")
 
 # Required inputs
-st.subheader("Essential PFT Measurements")
-fev1 = st.number_input("FEV1 (% predicted)", min_value=0.0, max_value=150.0, step=0.1, help="Forced expiratory volume in 1 second, as a percentage of predicted.")
-fvc = st.number_input("FVC (% predicted)", min_value=0.0, max_value=150.0, step=0.1, help="Forced vital capacity, as a percentage of predicted.")
-fev1_fvc = st.number_input("FEV1/FVC ratio (%)", min_value=0.0, max_value=100.0, step=0.1, help="FEV1/FVC ratio, as a percentage.")
+st.sidebar.header("Essential PFT Measurements")
+fev1 = st.sidebar.number_input("FEV1 (% predicted)", min_value=0.0, max_value=150.0, step=0.1, help="Forced expiratory volume in 1 second, as a percentage of predicted.")
+fvc = st.sidebar.number_input("FVC (% predicted)", min_value=0.0, max_value=150.0, step=0.1, help="Forced vital capacity, as a percentage of predicted.")
+fev1_fvc = st.sidebar.number_input("FEV1/FVC ratio (%)", min_value=0.0, max_value=100.0, step=0.1, help="FEV1/FVC ratio, as a percentage.")
 
 # Optional inputs
-if st.checkbox("Show additional optional inputs"):
-    st.subheader("Additional PFT Measurements")
-    dlco_sb = st.number_input("DLCO_SB (mL/min/mmHg)", min_value=0.0, max_value=150.0, step=0.1, help="Single breath diffusing capacity for carbon monoxide.")
-    dl_va = st.number_input("DL/VA ratio (mL/min/mmHg/L)", min_value=0.0, max_value=10.0, step=0.1, help="Diffusing capacity normalized to alveolar volume.")
-    va_sb = st.number_input("VA_SB (L)", min_value=0.0, max_value=10.0, step=0.1, help="Alveolar volume from single breath testing.")
-    ivc_sb = st.number_input("IVC_SB (L)", min_value=0.0, max_value=10.0, step=0.1, help="Inspiratory capacity during single breath testing.")
-    bht = st.number_input("BHT (seconds)", min_value=0.0, max_value=60.0, step=0.1, help="Breath-holding time during single breath testing.")
+if st.sidebar.checkbox("Show additional optional inputs"):
+    st.sidebar.header("Additional PFT Measurements")
+    dlco_sb = st.sidebar.number_input("DLCO_SB (mL/min/mmHg)", min_value=0.0, max_value=150.0, step=0.1, help="Single breath diffusing capacity for carbon monoxide.")
+    dl_va = st.sidebar.number_input("DL/VA ratio (mL/min/mmHg/L)", min_value=0.0, max_value=10.0, step=0.1, help="Diffusing capacity normalized to alveolar volume.")
+    va_sb = st.sidebar.number_input("VA_SB (L)", min_value=0.0, max_value=10.0, step=0.1, help="Alveolar volume from single breath testing.")
+    ivc_sb = st.sidebar.number_input("IVC_SB (L)", min_value=0.0, max_value=10.0, step=0.1, help="Inspiratory capacity during single breath testing.")
+    bht = st.sidebar.number_input("BHT (seconds)", min_value=0.0, max_value=60.0, step=0.1, help="Breath-holding time during single breath testing.")
 else:
     dlco_sb = None
     dl_va = None
@@ -123,8 +121,8 @@ else:
     ivc_sb = None
     bht = None
 
-# Button to calculate
-if st.button("Interpret Results"):
+# Main window output
+if st.sidebar.button("Interpret Results"):
     results = interpret_pft(fev1, fvc, fev1_fvc / 100, age, gender, height_cm, ethnicity, dlco_sb, dl_va, va_sb, ivc_sb, bht)
     st.header("Results")
     st.write(f"**Patient Details:** Age: {age}, Weight: {weight_kg} kg, Height: {height_cm} cm, Gender: {gender}, Ethnicity: {ethnicity}")
@@ -132,7 +130,7 @@ if st.button("Interpret Results"):
         st.write(f"- {line}")
 
 # Optional visualization
-if st.checkbox("Show visual comparison"):
+if st.sidebar.checkbox("Show visual comparison"):
     import matplotlib.pyplot as plt
 
     predicted = [100, 100, 100]
@@ -161,7 +159,7 @@ if st.checkbox("Show visual comparison"):
     st.pyplot(fig)
 
 # Optional: Calculate and display PEF
-if st.checkbox("Show Peak Expiratory Flow (PEF)"):
+if st.sidebar.checkbox("Show Peak Expiratory Flow (PEF)"):
     pef = calculate_pef(age, gender, height_cm)
     if pef:
         st.write(f"**Estimated Peak Expiratory Flow (PEF):** {pef:.2f} L/min (based on NHANES equations).")
